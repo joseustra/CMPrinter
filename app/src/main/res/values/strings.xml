@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">CMPrinter</string>
+    <string name="title_activity_barcode_scanning">BarcodeScanning</string>
+    <string name="capture_image">Capture Image</string>
+</resources>
