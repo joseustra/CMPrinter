@@ -9,11 +9,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.TextView
 import android.widget.Toast
+import okhttp3.*
+import java.io.IOException
 
 
 const val MIME_TEXT_PLAIN = "text/plain"
 
 class ReceiverActivity : AppCompatActivity() {
+    var client = OkHttpClient()
 
     private var tvIncomingMessage: TextView? = null
 
@@ -21,10 +24,13 @@ class ReceiverActivity : AppCompatActivity() {
 
     private val isNfcSupported: Boolean = this.nfcAdapter != null
 
+    private lateinit var qrCodeReceiverActivity: Intent
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_receiver)
+        qrCodeReceiverActivity = Intent(this, QRCodeReceiverActivity::class.java)
         initViews()
     }
 
@@ -53,7 +59,22 @@ class ReceiverActivity : AppCompatActivity() {
                 val ndefRecord0 = inNdefRecords[0]
 
                 val inMessage = String(ndefRecord0.payload)
-                tvIncomingMessage?.text = inMessage
+                val url = "https://a167f37a.ngrok.io/rest/printer/receipt?id=${inMessage}"
+                val request = Request.Builder().url(url).build()
+
+                client.newCall(request).enqueue(object : Callback {
+                    override fun onResponse(call: Call?, response: Response?) {
+                        val body = response?.body()?.string()
+                        qrCodeReceiverActivity.putExtra("body", body)
+                        startActivity(qrCodeReceiverActivity)
+                    }
+
+                    override fun onFailure(call: Call?, e: IOException?) {
+                        println("Falhou")
+                        println(e.toString())
+                    }
+                })
+
             }
         }
     }
