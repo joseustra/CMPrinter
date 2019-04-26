@@ -72,7 +72,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun requestReceipt(id: String?) {
-        val url = "https://a167f37a.ngrok.io/rest/printer/receipt?id=${id}"
+        val url = "http://a2f6bd70.ngrok.io/rest/printer/receipt?id=${id}"
 
         val request = Request.Builder().url(url).build()
 
